@@ -1,31 +1,28 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Vehicles.API.Data;
 using Vehicles.API.Data.Entities;
 
 namespace Vehicles.API.Controllers
 {
-    public class VehicleTypesController : Controller
+    public class ProceduresController : Controller
     {
         private readonly DataContext _context;
-
-        public VehicleTypesController(DataContext context)
+        public ProceduresController(DataContext context)
         {
             _context = context;
         }
-
-        // GET: VehicleTypes
+        // GET: Procedures
         public async Task<IActionResult> Index()
         {
-            return View(await _context.VehicleTypes.ToListAsync());
+            return View(await _context.Procedures.ToListAsync());
         }
 
-        // GET: VehicleTypes/Details/
+        // GET: Procedures/Details/
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,36 +30,54 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            var vehicleType = await _context.VehicleTypes
+            Procedures procedure = await _context.Procedures
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (vehicleType == null)
+            if (procedure == null)
             {
                 return NotFound();
             }
 
-            return View(vehicleType);
+            return View(procedure);
         }
 
-        // GET: VehicleTypes/Create
+        // GET: Procedures/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: VehicleTypes/Create
+        // POST: Procedures/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description")] VehicleType vehicleType)
+        public async Task<IActionResult> Create(Procedures procedure)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(vehicleType);
+                try 
+                { 
+                _context.Add(procedure);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+                } catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate")) 
+                    {
+                        ModelState.AddModelError(string.Empty, "This procedure already exists");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+
+                }
+                catch(Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
             }
-            return View(vehicleType);
+            return View(procedure);
         }
 
         // GET: VehicleTypes/Edit/5
@@ -73,12 +88,12 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            var vehicleType = await _context.VehicleTypes.FindAsync(id);
-            if (vehicleType == null)
+            Procedures procedure = await _context.Procedures.FindAsync(id);
+            if (procedure == null)
             {
                 return NotFound();
             }
-            return View(vehicleType);
+            return View(procedure);
         }
 
         // POST: VehicleTypes/Edit/5
@@ -86,9 +101,9 @@ namespace Vehicles.API.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Description")] VehicleType vehicleType)
+        public async Task<IActionResult> Edit(int id, Procedures procedure)
         {
-            if (id != vehicleType.Id)
+            if (id != procedure.Id)
             {
                 return NotFound();
             }
@@ -97,23 +112,28 @@ namespace Vehicles.API.Controllers
             {
                 try
                 {
-                    _context.Update(vehicleType);
+                    _context.Update(procedure);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException dbUpdateException)
                 {
-                    if (!VehicleTypeExists(vehicleType.Id))
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        return NotFound();
+                        ModelState.AddModelError(string.Empty, "This procedure already exists");
                     }
                     else
                     {
-                        throw;
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
                     }
+
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
             }
-            return View(vehicleType);
+            return View(procedure);
         }
 
         // GET: VehicleTypes/Delete/5
@@ -124,14 +144,14 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            var vehicleType = await _context.VehicleTypes
+            Procedures procedure = await _context.Procedures
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (vehicleType == null)
+            if (procedure == null)
             {
                 return NotFound();
             }
 
-            return View(vehicleType);
+            return View(procedure);
         }
 
         // POST: VehicleTypes/Delete/5
@@ -139,15 +159,15 @@ namespace Vehicles.API.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var vehicleType = await _context.VehicleTypes.FindAsync(id);
-            _context.VehicleTypes.Remove(vehicleType);
+            Procedures procedure = await _context.Procedures.FindAsync(id);
+            _context.Procedures.Remove(procedure);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool VehicleTypeExists(int id)
+        private bool ProcedureTypeExists(int id)
         {
-            return _context.VehicleTypes.Any(e => e.Id == id);
+            return _context.Procedures.Any(e => e.Id == id);
         }
     }
 }

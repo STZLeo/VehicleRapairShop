@@ -80,7 +80,7 @@ namespace Vehicles.API.Controllers
             return View(procedure);
         }
 
-        // GET: VehicleTypes/Edit/5
+        // GET: Procedures/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -96,7 +96,7 @@ namespace Vehicles.API.Controllers
             return View(procedure);
         }
 
-        // POST: VehicleTypes/Edit/5
+        // POST: Procedures/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -136,7 +136,7 @@ namespace Vehicles.API.Controllers
             return View(procedure);
         }
 
-        // GET: VehicleTypes/Delete/5
+        // GET: Procedures/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -154,7 +154,7 @@ namespace Vehicles.API.Controllers
             return View(procedure);
         }
 
-        // POST: VehicleTypes/Delete/5
+        // POST: Procedures/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -165,7 +165,7 @@ namespace Vehicles.API.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProcedureTypeExists(int id)
+        private bool ProcedureExist(int id)
         {
             return _context.Procedures.Any(e => e.Id == id);
         }
